@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h> 
 #include <pthread.h> 
+#include <math.h> 
 
 // Variáveis Globais
 long int n;
@@ -38,7 +39,7 @@ int main(int argc, char *argv[]) {
     FILE *file;
     size_t ret;
 
-    double originalInnerProduct, globalProd, *retProdThreads, variance;
+    double originalInnerProduct, globalProd = 0.0, *retProdThreads, variance;
 
     pthread_t *tid_sistema;
 
@@ -106,7 +107,7 @@ int main(int argc, char *argv[]) {
     ret = fread(&originalInnerProduct, sizeof(double), 1, file); 
     printf("\nProduto Interno Original  =  %.26lf\n", originalInnerProduct);
 
-    variance = ((originalInnerProduct - globalProd) / originalInnerProduct);
+    variance = fabs((originalInnerProduct - globalProd) / originalInnerProduct);
     printf("\nA variancia entre o valor original e o encontrado, com concorrencia, eh: %.26lf \n", variance);
 
     free(vector1);
@@ -117,10 +118,3 @@ int main(int argc, char *argv[]) {
 }
 
 
-/* Os valores encontrados concorrentemente e sequencialmente foram extremamente próximos. 
-Mesmo com um altíssimo número de elementos gerados nos vetores, a variância foi mínima, sendo, inclusive,
-necessário o uso de float para diminuir a precisão e possiblitar a melhor visualização da margem de erro.
-O uso de double gerava uma variância literalmente zero, o que impossibilitava uma análise razoável. 
-Não sei se aumentando ainda mais o número de elementos (usei 25000) poderia tornar as discrepâncias ainda maiores
-e, especialmente, mais óbvias. Um outro ponto que poderia ser ponderado é o tempo de execução para verificar
-se vale a pena o "investimento" na concorrência a partir de que ponto. */
